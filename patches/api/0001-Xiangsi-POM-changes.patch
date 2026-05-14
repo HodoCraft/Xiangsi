@@ -1,0 +1,35 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Lm5392 <lmmodqwq@outlook.com>
+Date: Sun, 10 May 2026 20:48:07 +0800
+Subject: [PATCH] Xiangsi POM changes
+
+
+diff --git a/pom.xml b/pom.xml
+index 73fbd5d5..c8200ef9 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -3,18 +3,18 @@
+          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+     <modelVersion>4.0.0</modelVersion>
+     <parent>
+-        <groupId>com.destroystokyo.paper</groupId>
+-        <artifactId>paper-parent</artifactId>
++        <groupId>org.hodocraft</groupId>
++        <artifactId>xiangsi-parent</artifactId>
+         <version>dev-SNAPSHOT</version>
++        <relativePath>../pom.xml</relativePath>
+     </parent>
+ 
+-    <groupId>com.destroystokyo.paper</groupId>
+-    <artifactId>paper-api</artifactId>
++    <artifactId>xiangsi-api</artifactId>
+     <version>1.16.5-R0.1-SNAPSHOT</version>
+     <packaging>jar</packaging>
+ 
+-    <name>Paper-API</name>
+-    <url>https://github.com/PaperMC/Paper</url>
++    <name>Xiangsi-API</name>
++    <url>https://github.com/HodoCraft/Xiangsi</url>
+     <description>An enhanced plugin API for Minecraft servers.</description>
+ 
+     <properties>
