@@ -5,7 +5,7 @@ Subject: [PATCH] Xiangsi POM changes
 
 
 diff --git a/pom.xml b/pom.xml
-index 73fbd5d5..c8200ef9 100644
+index 73fbd5d5..1cc03fda 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,18 +3,18 @@
@@ -33,3 +33,44 @@ index 73fbd5d5..c8200ef9 100644
      <description>An enhanced plugin API for Minecraft servers.</description>
  
      <properties>
+@@ -22,7 +22,7 @@
+         <maven.compiler.source>1.8</maven.compiler.source>
+         <maven.compiler.target>1.8</maven.compiler.target>
+         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+-        <adventure.version>4.7.0</adventure.version> <!-- Paper - When updating this make sure to update the linked JavaDocs on the homepage as well! -->
++        <adventure.version>4.14.0</adventure.version> <!-- Paper - When updating this make sure to update the linked JavaDocs on the homepage as well! -->
+     </properties>
+ 
+     <repositories>
+@@ -64,6 +64,10 @@
+             <groupId>net.kyori</groupId>
+             <artifactId>adventure-text-serializer-plain</artifactId>
+         </dependency>
++        <dependency>
++            <groupId>net.kyori</groupId>
++            <artifactId>adventure-text-minimessage</artifactId>
++        </dependency>
+         <!-- Paper end -->
+         <dependency>
+             <groupId>it.unimi.dsi</groupId>
+@@ -144,6 +148,12 @@
+             <version>20.1.0</version>
+             <scope>provided</scope>
+         </dependency>
++        <dependency>
++            <groupId>org.checkerframework</groupId>
++            <artifactId>checker-qual</artifactId>
++            <version>3.11.0</version>
++            <scope>compile</scope>
++        </dependency>
+         <!-- Paper - Add SLF4J -->
+         <dependency>
+             <groupId>org.slf4j</groupId>
+@@ -285,6 +295,7 @@
+                         <link>https://jd.adventure.kyori.net/text-serializer-gson/${adventure.version}/</link>
+                         <link>https://jd.adventure.kyori.net/text-serializer-legacy/${adventure.version}/</link>
+                         <link>https://jd.adventure.kyori.net/text-serializer-plain/${adventure.version}/</link>
++                        <link>https://jd.adventure.kyori.net/text-minimessage/${adventure.version}/</link>
+                         <!-- Paper end -->
+                     </links>
+                 </configuration>
