@@ -1,0 +1,103 @@
+name: Build
+
+on:
+  push:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+env:
+  R2_PREFIX: ${{ vars.R2_PREFIX || 'xiangsi' }}
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6.0.2
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v5.2.0
+        with:
+          distribution: temurin
+          java-version: "8"
+          cache: maven
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "Github Actions"
+          git config --global user.email "no-reply@github.com"
+          git config --global commit.gpgsign false
+
+      - name: Apply patches
+        run: |
+          set -euo pipefail
+
+          ./scripts/apply.sh "$PWD"
+
+      - name: Create Jar
+        run: |
+          set -euo pipefail
+
+          describe="git-Xiangsi-${GITHUB_RUN_NUMBER}"
+
+          mvn -N install
+          (cd Xiangsi-API && mvn -e clean install)
+          (cd Paper/Paper-MojangAPI && mvn -e clean install)
+          (cd Xiangsi-Server && mvn -e clean install "-Ddescribe=${describe}")
+          ./scripts/xiangsiclip.sh
+
+      - name: Calculate SHA-256
+        id: artifact
+        run: |
+          set -euo pipefail
+
+          test -s xiangsiclip.jar
+
+          minecraft_version="$(sed -n 's:.*<minecraft.version>\(.*\)</minecraft.version>.*:\1:p' Xiangsi-Server/pom.xml | head -n 1)"
+          test -n "${minecraft_version}"
+
+          object_prefix="${R2_PREFIX%/}"
+          object_name="xiangsi-${minecraft_version}-${GITHUB_RUN_NUMBER}.jar"
+          object_key="${object_prefix}/${object_name}"
+
+          sha256sum xiangsiclip.jar > xiangsiclip.jar.sha256
+
+          {
+            echo "object_name=${object_name}"
+            echo "object_key=${object_key}"
+            echo "checksum_key=${object_key}.sha256"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Upload Jar to Cloudflare R2
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: auto
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+          OBJECT_KEY: ${{ steps.artifact.outputs.object_key }}
+          CHECKSUM_KEY: ${{ steps.artifact.outputs.checksum_key }}
+        run: |
+          set -euo pipefail
+
+          : "${AWS_ACCESS_KEY_ID:?Missing secret R2_ACCESS_KEY_ID}"
+          : "${AWS_SECRET_ACCESS_KEY:?Missing secret R2_SECRET_ACCESS_KEY}"
+          : "${R2_ACCOUNT_ID:?Missing secret R2_ACCOUNT_ID}"
+          : "${R2_BUCKET:?Missing secret R2_BUCKET}"
+
+          endpoint_url="https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
+
+          aws s3 cp xiangsiclip.jar "s3://${R2_BUCKET}/${OBJECT_KEY}" \
+            --endpoint-url "${endpoint_url}" \
+            --content-type "application/java-archive"
+
+          aws s3 cp xiangsiclip.jar.sha256 "s3://${R2_BUCKET}/${CHECKSUM_KEY}" \
+            --endpoint-url "${endpoint_url}" \
+            --content-type "text/plain"
