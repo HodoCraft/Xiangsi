@@ -29,6 +29,33 @@ jobs:
           java-version: "8"
           cache: maven
 
+      - name: Configure Maven mirrors
+        run: |
+          set -euo pipefail
+
+          mkdir -p "$HOME/.m2"
+          cat > "$HOME/.m2/settings.xml" <<'EOF'
+          <settings>
+            <mirrors>
+              <mirror>
+                <id>papermc-releases-current</id>
+                <mirrorOf>papermc-releases</mirrorOf>
+                <url>https://repo.papermc.io/repository/maven-releases/</url>
+              </mirror>
+              <mirror>
+                <id>papermc-snapshots-current</id>
+                <mirrorOf>papermc-snapshots</mirrorOf>
+                <url>https://repo.papermc.io/repository/maven-snapshots/</url>
+              </mirror>
+              <mirror>
+                <id>papermc-public-current</id>
+                <mirrorOf>destroystokyo-repo</mirrorOf>
+                <url>https://repo.papermc.io/repository/maven-public/</url>
+              </mirror>
+            </mirrors>
+          </settings>
+          EOF
+
       - name: Configure Git
         run: |
           git config --global user.name "Github Actions"
