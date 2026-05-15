@@ -15,4 +15,11 @@
         <module>Xiangsi-API</module>
         <module>Xiangsi-Server</module>
     </modules>
+
+    <repositories>
+      <repository>
+          <id>aikar</id>
+          <url>https://repo.aikar.co/content/groups/aikar/</url>
+      </repository>
+  </repositories>
 </project>
